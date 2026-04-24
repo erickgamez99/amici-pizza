@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Amici Pizza — New York-Style Pizza in Mesa & Queen Creek, AZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #f8f2e7;
+    --cream-2: #f2ead7;
+    --cream-3: #e8dcc0;
+    --bg: #fbf6ec;
+    --bg-soft: #f3ecdc;
+
+    --fg: #1a0f0a;
+    --muted: #6b5a4d;
+    --line: rgba(26, 15, 10, 0.12);
+    --line-soft: rgba(26, 15, 10, 0.06);
+
+    --wine: #7a1a1a;
+    --wine-2: #9a2323;
+    --wine-3: #b53030;
+    --basil: #3d5a3d;
+    --basil-2: #547155;
+    --gold: #c9a449;
+    --tomato: #d14a2b;
+
+    --shadow-sm: 0 1px 2px rgba(26, 15, 10, 0.05), 0 1px 3px rgba(26, 15, 10, 0.06);
+    --shadow-md: 0 4px 12px rgba(26, 15, 10, 0.08), 0 2px 6px rgba(26, 15, 10, 0.05);
+    --shadow-lg: 0 20px 40px -12px rgba(26, 15, 10, 0.18), 0 8px 20px -8px rgba(26, 15, 10, 0.10);
+    --shadow-xl: 0 30px 60px -18px rgba(26, 15, 10, 0.26), 0 14px 32px -10px rgba(26, 15, 10, 0.14);
+
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --max: 1280px;
+    --gutter: clamp(20px, 4vw, 56px);
+    --radius: 999px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--fg);
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(122, 26, 26, 0.04) 0%, transparent 60%),
+      linear-gradient(180deg, var(--cream) 0%, var(--bg) 30%, var(--bg) 70%, var(--cream) 100%);
+    background-attachment: fixed;
+    font-weight: 400;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+  /* ---------- Scroll progress ---------- */
+  .scroll-progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--wine) 0%, var(--tomato) 100%);
+    z-index: 100;
+    transition: width .1s linear;
+    box-shadow: 0 0 8px rgba(122, 26, 26, 0.4);
+  }
+
+  /* ---------- Announcement ---------- */
+  .announce {
+    background: var(--wine);
+    color: var(--cream);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-align: center;
+    padding: 10px var(--gutter);
+    position: relative;
+    z-index: 10;
+  }
+  .announce a {
+    color: var(--cream);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(248, 242, 231, 0.45);
+    padding-bottom: 1px;
+    transition: border-color .2s ease;
+  }
+  .announce a:hover { border-color: var(--cream); }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px var(--gutter);
+    background: rgba(251, 246, 236, 0.94);
+    backdrop-filter: saturate(180%) blur(16px);
+    -webkit-backdrop-filter: saturate(180%) blur(16px);
+    box-shadow: 0 1px 0 var(--line);
+    transition: padding .35s var(--ease-smooth), box-shadow .35s var(--ease-smooth);
+    color: var(--fg);
+  }
+  .nav.scrolled {
+    padding: 12px var(--gutter);
+    box-shadow: 0 1px 0 var(--line), var(--shadow-sm);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    color: inherit;
+  }
+  .logo img {
+    height: 44px;
+    width: auto;
+    display: block;
+    transition: transform .3s var(--ease-out), filter .3s var(--ease-out);
+  }
+  .logo:hover img { transform: scale(1.04); }
+  /* Logo always shows its real colors on the cream nav */
+  .logo { display: flex; align-items: center; }
+  .nav .logo img { filter: none; }
+  .nav-links { display: flex; gap: 32px; font-size: 14px; font-weight: 500; }
+  .nav-links a {
+    color: inherit;
+    opacity: 0.9;
+    position: relative;
+    transition: opacity .2s ease;
+  }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -4px; left: 0; right: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform .4s var(--ease-out);
+  }
+  .nav-links a:hover { opacity: 1; }
+  .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
+  .nav-utils { display: flex; gap: 14px; font-size: 13px; font-weight: 500; align-items: center; }
+  .nav-cta {
+    padding: 10px 22px;
+    background: var(--wine);
+    color: var(--cream) !important;
+    border: 1px solid var(--wine);
+    border-radius: var(--radius);
+    transition: background .25s ease, border-color .25s ease, transform .25s var(--ease-out);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .nav-cta:hover { background: var(--wine-2); border-color: var(--wine-2); transform: translateY(-1px); }
+  @media (max-width: 860px) {
+    .nav-links { display: none; }
+    .nav-utils { gap: 10px; }
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: transform .3s var(--ease-out), background .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease;
+    border: 1px solid transparent;
+    will-change: transform;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform .6s var(--ease-out);
+  }
+  .btn:hover::before { transform: translateX(100%); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--wine) 0%, var(--wine-2) 100%);
+    color: var(--cream);
+    border-color: var(--wine);
+    box-shadow: var(--shadow-md);
+  }
+  .btn-primary:hover { box-shadow: var(--shadow-lg); }
+  .btn-outline {
+    background: transparent;
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+  .btn-outline:hover { background: var(--fg); color: var(--cream); box-shadow: var(--shadow-md); }
+  .btn-outline-light {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.6);
+    color: #fff;
+    backdrop-filter: blur(6px);
+  }
+  .btn-outline-light:hover { background: var(--cream); color: var(--wine); border-color: var(--cream); box-shadow: var(--shadow-lg); }
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--fg);
+  }
+  .btn-ghost:hover { border-color: var(--fg); box-shadow: var(--shadow-sm); }
+
+  /* ---------- Type ---------- */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--wine);
+    margin-bottom: 22px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 24px; height: 2px;
+    background: currentColor;
+  }
+  .eyebrow.on-dark { color: var(--cream); opacity: 0.9; }
+
+  h1, h2, h3, h4 {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--fg);
+  }
+
+  .text-grad-light {
+    background: linear-gradient(180deg, #ffffff 0%, #f2e4c5 55%, #d4bc87 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .text-grad-dark {
+    background: linear-gradient(180deg, #1a0f0a 0%, #3a261a 55%, #6b4a31 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Nav text — always dark on the cream nav */
+  .nav,
+  .nav .logo,
+  .nav .nav-links a,
+  .nav .nav-utils a { color: var(--fg); }
+  .nav .nav-links a { font-weight: 600; }
+
+  /* Ensure spans inside gradient headings stay visible */
+  .text-grad-dark .underline-wrap,
+  .text-grad-dark .accent-word {
+    color: var(--wine);
+    -webkit-text-fill-color: var(--wine);
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+  }
+  .text-grad-light .underline-wrap,
+  .text-grad-light .accent-word {
+    color: var(--cream);
+    -webkit-text-fill-color: var(--cream);
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+  }
+
+  .display {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(48px, 8vw, 112px);
+    line-height: 1.0;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+  }
+  .headline {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(32px, 4.4vw, 60px);
+    line-height: 1.05;
+    font-weight: 800;
+    letter-spacing: -0.035em;
+  }
+  .subhead {
+    font-size: clamp(16px, 1.3vw, 19px);
+    line-height: 1.65;
+    color: var(--muted);
+    max-width: 680px;
+  }
+  .subhead.on-dark { color: rgba(248, 242, 231, 0.85); }
+  .accent-word { color: var(--wine); font-style: italic; font-weight: 800; }
+
+  .underline-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .underline-wrap .scribble-underline {
+    position: absolute;
+    left: -4px; right: -4px;
+    bottom: -8px;
+    width: calc(100% + 8px);
+    height: 14px;
+    stroke: var(--tomato);
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+  }
+  .underline-wrap .scribble-underline.thick { stroke-width: 4; }
+
+  /* ---------- Sections ---------- */
+  section { position: relative; }
+  .section-pad { padding: clamp(80px, 12vh, 160px) var(--gutter); }
+
+  /* ---------- Reveal animations ---------- */
+  .reveal {
+    opacity: 0;
+    transition: opacity 1s var(--ease-out), transform 1s var(--ease-out), filter 1s var(--ease-out);
+    will-change: opacity, transform, filter;
+  }
+  .reveal[data-anim="fade-up"]    { transform: translateY(48px); }
+  .reveal[data-anim="fade-down"]  { transform: translateY(-32px); }
+  .reveal[data-anim="fade-left"]  { transform: translateX(-48px); }
+  .reveal[data-anim="fade-right"] { transform: translateX(48px); }
+  .reveal[data-anim="scale-in"]   { transform: scale(0.94); filter: blur(6px); }
+  .reveal.visible { opacity: 1; transform: none; filter: none; }
+
+  .split-words .word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.4em);
+    filter: blur(8px);
+    transition: opacity .9s var(--ease-out), transform .9s var(--ease-out), filter .9s var(--ease-out);
+  }
+  .split-words.visible .word {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition-delay: calc(0.3s + var(--i, 0) * 95ms);
+  }
+
+  .stagger > * { transition-delay: calc(0.12s + var(--i, 0) * 90ms); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - 44px);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    color: var(--cream);
+    isolation: isolate;
+    padding: 100px var(--gutter);
+    background: #1a0a08;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    background: #140806;
+    overflow: hidden;
+  }
+  .hero-bg img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    opacity: 0.65;
+    filter: contrast(1.08) saturate(1.1);
+    transform: scale(1.04);
+    transition: transform 1.6s var(--ease-out);
+  }
+  .hero:hover .hero-bg img { transform: scale(1.08); }
+  .hero-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(100deg, rgba(15, 6, 4, 0.82) 0%, rgba(15, 6, 4, 0.45) 55%, rgba(15, 6, 4, 0.2) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0%, transparent 30%, rgba(0, 0, 0, 0.45) 100%);
+    pointer-events: none;
+  }
+  .hero-orbs { position: absolute; inset: 0; z-index: -2; pointer-events: none; overflow: hidden; }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.45;
+    animation: orb-float 16s var(--ease-smooth) infinite alternate;
+    mix-blend-mode: overlay;
+  }
+  .orb-1 {
+    width: 520px; height: 520px;
+    top: -10%; left: -8%;
+    background: radial-gradient(circle, rgba(181, 48, 48, 0.5) 0%, transparent 70%);
+  }
+  .orb-2 {
+    width: 420px; height: 420px;
+    bottom: -10%; right: -5%;
+    background: radial-gradient(circle, rgba(201, 164, 73, 0.3) 0%, transparent 70%);
+    animation-delay: -6s;
+  }
+  .orb-3 {
+    width: 340px; height: 340px;
+    top: 40%; right: 30%;
+    background: radial-gradient(circle, rgba(122, 26, 26, 0.4) 0%, transparent 70%);
+    animation-delay: -12s;
+  }
+  @keyframes orb-float {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(40px, -30px) scale(1.08); }
+    100% { transform: translate(-30px, 40px) scale(0.95); }
+  }
+  .hero-grain {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.25;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/></svg>");
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    position: relative;
+    max-width: var(--max);
+    margin: 0 auto;
+    width: 100%;
+  }
+  .hero-eyebrow-italian {
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(18px, 1.6vw, 22px);
+    color: var(--gold);
+    letter-spacing: 0.02em;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .hero h1.display {
+    max-width: 1100px;
+    font-size: clamp(54px, 8.4vw, 128px);
+  }
+  .hero h1.display .accent-word {
+    position: relative;
+    display: inline-block;
+    color: var(--cream);
+    -webkit-text-fill-color: var(--cream);
+    background: none;
+  }
+  .hero h1.display .accent-word em {
+    font-style: italic;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    color: var(--gold);
+    -webkit-text-fill-color: var(--gold);
+  }
+  .hero-sub {
+    margin: 28px 0 36px;
+    max-width: 560px;
+    font-size: clamp(16px, 1.3vw, 19px);
+    color: rgba(248, 242, 231, 0.88);
+    line-height: 1.65;
+  }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-meta {
+    margin-top: 48px;
+    display: flex;
+    gap: clamp(24px, 5vw, 64px);
+    flex-wrap: wrap;
+    padding-top: 28px;
+    border-top: 1px solid rgba(248, 242, 231, 0.2);
+    max-width: 700px;
+  }
+  .hero-meta-item {
+    font-size: 13px;
+    color: rgba(248, 242, 231, 0.7);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .hero-meta-item strong {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--cream);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-top: 4px;
+  }
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(248, 242, 231, 0.6);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: scroll-bob 2.4s var(--ease-smooth) infinite;
+  }
+  .hero-scroll-hint::after {
+    content: "";
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, rgba(248, 242, 231, 0.6), transparent);
+  }
+  @keyframes scroll-bob {
+    0%, 100% { transform: translate(-50%, 0); opacity: 0.6; }
+    50%      { transform: translate(-50%, 6px); opacity: 0.9; }
+  }
+
+  /* ---------- Case/stats band ---------- */
+  .case-band {
+    padding: clamp(90px, 13vh, 150px) var(--gutter);
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(122, 26, 26, 0.06) 0%, transparent 65%),
+      linear-gradient(180deg, var(--cream) 0%, var(--bg) 50%, var(--cream-2) 100%);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .case-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    gap: 48px;
+    text-align: center;
+    position: relative;
+  }
+  .case-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--wine);
+  }
+  .chip-dot {
+    width: 6px; height: 6px;
+    background: var(--tomato);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(209, 74, 43, 0.25);
+    animation: dot-pulse 2s ease-in-out infinite;
+  }
+  @keyframes dot-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  .case-numbers {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin-top: 16px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 40px 0;
+  }
+  .case-n {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(40px, 5.6vw, 76px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .case-l {
+    margin-top: 12px;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  @media (max-width: 720px) {
+    .case-numbers { grid-template-columns: repeat(2, 1fr); gap: 32px 16px; }
+  }
+
+  /* ---------- Section intro ---------- */
+  .section-intro {
+    padding: clamp(90px, 12vh, 140px) var(--gutter) clamp(30px, 4vh, 60px);
+    text-align: center;
+    max-width: 920px;
+    margin: 0 auto;
+  }
+  .section-intro .eyebrow { justify-content: center; }
+  .section-intro .subhead { margin: 28px auto 0; text-align: center; }
+
+  /* ---------- Area sections ---------- */
+  .area {
+    padding: clamp(60px, 8vh, 110px) var(--gutter) clamp(100px, 14vh, 160px);
+    position: relative;
+  }
+  .area.alt {
+    background: linear-gradient(180deg, var(--bg) 0%, var(--cream-2) 60%, var(--cream-3) 100%);
+  }
+  .area-head {
+    max-width: var(--max);
+    margin: 0 auto clamp(48px, 7vh, 80px);
+    text-align: center;
+  }
+  .area-head .eyebrow { justify-content: center; }
+  .area-head .subhead { margin: 28px auto 0; text-align: center; }
+  .area-tag {
+    display: inline-block;
+    font-family: 'Caveat', cursive;
+    font-size: 24px;
+    color: var(--wine);
+    margin-top: 16px;
+    font-weight: 600;
+    transform: rotate(-2deg);
+  }
+
+  /* ---------- Menu Cards ---------- */
+  .menu-cards {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .menu-card {
+    background: linear-gradient(180deg, #ffffff 0%, var(--cream) 100%);
+    padding: 36px 32px 36px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out), border-color .5s var(--ease-out);
+    will-change: transform;
+    position: relative;
+    overflow: hidden;
+  }
+  .menu-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--wine) 0%, var(--tomato) 100%);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .6s var(--ease-out);
+  }
+  .menu-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: transparent;
+  }
+  .menu-card:hover::before { transform: scaleX(1); }
+  .menu-card .menu-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--wine);
+    padding: 4px 10px;
+    background: rgba(122, 26, 26, 0.08);
+    border-radius: 999px;
+    margin-bottom: 16px;
+  }
+  .menu-card .menu-tag.basil {
+    color: var(--basil);
+    background: rgba(61, 90, 61, 0.1);
+  }
+  .menu-card .menu-tag.gold {
+    color: #8a6f22;
+    background: rgba(201, 164, 73, 0.15);
+  }
+  .menu-card h3 {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  .menu-card .menu-ital {
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .menu-card p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ---------- Story / About ---------- */
+  .story {
+    padding: clamp(100px, 14vh, 180px) var(--gutter);
+    background:
+      radial-gradient(ellipse 50% 50% at 0% 50%, rgba(122, 26, 26, 0.05) 0%, transparent 60%),
+      linear-gradient(180deg, var(--cream-2) 0%, var(--bg) 50%, var(--cream) 100%);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .story-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  .story-img {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: var(--shadow-lg);
+    transform: rotate(-1.5deg);
+    transition: transform .7s var(--ease-out), box-shadow .7s var(--ease-out);
+  }
+  .story-img:hover { transform: rotate(0) translateY(-6px); box-shadow: var(--shadow-xl); }
+  .story-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .story-img::after {
+    content: "est. since day one";
+    position: absolute;
+    bottom: -14px;
+    right: -10px;
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    color: var(--wine);
+    background: var(--cream);
+    padding: 4px 14px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    transform: rotate(3deg);
+    box-shadow: var(--shadow-sm);
+  }
+  .story h2 {
+    margin-bottom: 24px;
+  }
+  .story p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--fg);
+    margin: 0 0 18px;
+  }
+  .story p em {
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    color: var(--wine);
+    font-weight: 500;
+  }
+  .story-signature {
+    font-family: 'Caveat', cursive;
+    font-size: 28px;
+    color: var(--wine);
+    margin-top: 24px;
+    display: inline-block;
+    transform: rotate(-2deg);
+  }
+  @media (max-width: 860px) {
+    .story-inner { grid-template-columns: 1fr; }
+    .story-img { max-width: 460px; margin: 0 auto; }
+  }
+
+  /* ---------- Locations ---------- */
+  .locations {
+    padding: clamp(100px, 14vh, 180px) var(--gutter);
+    background: linear-gradient(180deg, var(--cream) 0%, var(--bg-soft) 100%);
+    position: relative;
+  }
+  .locations-head {
+    text-align: center;
+    max-width: 820px;
+    margin: 0 auto clamp(56px, 7vh, 80px);
+  }
+  .locations-head .eyebrow { justify-content: center; }
+  .locations-grid {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  .loc-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+    display: flex;
+    flex-direction: column;
+  }
+  .loc-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-xl); }
+  .loc-card-header {
+    padding: 4px;
+    position: relative;
+  }
+  .loc-img {
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 6px;
+    position: relative;
+  }
+  .loc-img::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(26, 15, 10, 0.6) 100%);
+    border-radius: 6px;
+  }
+  .loc-img .loc-pin {
+    position: absolute;
+    top: 16px; left: 16px;
+    background: var(--cream);
+    color: var(--wine);
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: var(--shadow-sm);
+  }
+  .loc-body {
+    padding: 28px 32px 32px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .loc-body h3 {
+    font-size: 28px;
+    margin-bottom: 4px;
+  }
+  .loc-meta {
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .loc-details {
+    display: grid;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .loc-detail {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .loc-detail svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--wine);
+  }
+  .loc-detail .label {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .loc-detail .value {
+    font-size: 15px;
+    color: var(--fg);
+    line-height: 1.5;
+  }
+  .loc-detail a.value {
+    color: var(--wine);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(122, 26, 26, 0.3);
+    padding-bottom: 1px;
+    transition: border-color .2s ease;
+  }
+  .loc-detail a.value:hover { border-color: var(--wine); }
+  .loc-hours {
+    margin: 0 0 28px;
+    list-style: none;
+    padding: 14px 0;
+    border-top: 1px dashed var(--line);
+    border-bottom: 1px dashed var(--line);
+  }
+  .loc-hours li {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--fg);
+  }
+  .loc-hours li span:first-child { color: var(--muted); letter-spacing: 0.04em; }
+  .loc-hours li.today {
+    color: var(--wine);
+    font-weight: 600;
+  }
+  .loc-ctas {
+    margin-top: auto;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .loc-ctas .btn { padding: 12px 22px; font-size: 12px; }
+  @media (max-width: 860px) {
+    .locations-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Catering callout ---------- */
+  .catering-callout {
+    max-width: var(--max);
+    margin: 80px auto 0;
+    border-radius: 10px;
+    padding: 48px clamp(28px, 5vw, 56px);
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 48px;
+    align-items: center;
+    background:
+      radial-gradient(ellipse 50% 80% at 100% 50%, rgba(201, 164, 73, 0.12) 0%, transparent 60%),
+      linear-gradient(135deg, #281010 0%, #3b1816 100%);
+    color: var(--cream);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+  }
+  .catering-callout::before {
+    content: "";
+    position: absolute;
+    top: -30%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(209, 74, 43, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .catering-callout .eyebrow { color: var(--gold); }
+  .catering-callout .eyebrow::before { background: var(--gold); }
+  .catering-callout h3 {
+    color: var(--cream);
+    font-size: clamp(28px, 3.6vw, 44px);
+    line-height: 1.1;
+    margin-bottom: 18px;
+  }
+  .catering-callout h3 em {
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    color: var(--gold);
+    font-weight: 500;
+  }
+  .catering-callout p {
+    font-size: 16px;
+    color: rgba(248, 242, 231, 0.82);
+    line-height: 1.65;
+    margin: 0 0 26px;
+    max-width: 480px;
+  }
+  .catering-visual {
+    position: relative;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+  }
+  .catering-visual .big-num {
+    font-size: clamp(60px, 7vw, 100px);
+    font-weight: 400;
+    color: var(--gold);
+    line-height: 1;
+    font-style: normal;
+  }
+  .catering-visual .big-label {
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(248, 242, 231, 0.7);
+    margin-top: 10px;
+    font-style: normal;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+  .catering-visual .caveat {
+    font-family: 'Caveat', cursive;
+    font-size: 22px;
+    color: var(--gold);
+    margin-top: 18px;
+    display: block;
+    transform: rotate(-2deg);
+  }
+  .catering-callout .btn-primary {
+    background: linear-gradient(135deg, var(--gold) 0%, #b8932f 100%);
+    color: #1a0f0a;
+    border-color: var(--gold);
+  }
+  @media (max-width: 780px) {
+    .catering-callout { grid-template-columns: 1fr; text-align: center; }
+    .catering-callout p { margin-left: auto; margin-right: auto; }
+  }
+
+  /* ---------- Testimonials / reviews ---------- */
+  .reviews {
+    padding: clamp(100px, 14vh, 180px) var(--gutter);
+    background: linear-gradient(180deg, var(--cream-2) 0%, var(--cream) 100%);
+    text-align: center;
+    position: relative;
+  }
+  .reviews-head {
+    max-width: 820px;
+    margin: 0 auto clamp(56px, 7vh, 80px);
+  }
+  .reviews-head .eyebrow { justify-content: center; }
+  .reviews-head .subhead { margin: 28px auto 0; text-align: center; }
+  .rating-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--fg);
+  }
+  .rating-chip .stars {
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-size: 18px;
+  }
+  .rating-chip .count {
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .quotes {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    text-align: left;
+  }
+  .quote {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 32px 28px;
+    position: relative;
+    transition: transform .4s var(--ease-out), box-shadow .4s var(--ease-out);
+  }
+  .quote::before {
+    content: "\201C";
+    position: absolute;
+    top: 8px; left: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 80px;
+    line-height: 1;
+    color: rgba(122, 26, 26, 0.12);
+  }
+  .quote:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .quote .qstars {
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-size: 15px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .quote p {
+    font-family: 'Inter', sans-serif;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--fg);
+    margin: 0 0 22px;
+    font-weight: 400;
+    position: relative;
+  }
+  .quote-attr {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .quote-attr strong {
+    color: var(--fg);
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  /* ---------- Gallery strip ---------- */
+  .gallery-strip {
+    padding: clamp(60px, 8vh, 100px) 0;
+    background: var(--cream-3);
+    overflow: hidden;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .gallery-track {
+    display: flex;
+    gap: 16px;
+    width: fit-content;
+    animation: scroll-left 45s linear infinite;
+  }
+  .gallery-track:hover { animation-play-state: paused; }
+  .gallery-item {
+    flex-shrink: 0;
+    width: 320px;
+    height: 220px;
+    border-radius: 6px;
+    background-size: cover;
+    background-position: center;
+    box-shadow: var(--shadow-md);
+    transition: transform .3s var(--ease-out);
+  }
+  .gallery-item:hover { transform: scale(1.03); }
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ---------- Social / TikTok ---------- */
+  .social-section {
+    padding: clamp(100px, 14vh, 180px) var(--gutter);
+    background:
+      radial-gradient(ellipse 50% 60% at 100% 0%, rgba(209, 74, 43, 0.06) 0%, transparent 60%),
+      linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+    border-top: 1px solid var(--line);
+    position: relative;
+    overflow: hidden;
+  }
+  .social-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  .social-copy .eyebrow { color: var(--tomato); }
+  .social-copy h2 { margin-bottom: 22px; }
+  .social-copy p {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin: 0 0 28px;
+    max-width: 520px;
+  }
+  .social-handles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .social-handle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fg);
+    transition: transform .2s var(--ease-out), border-color .2s ease, box-shadow .2s ease;
+  }
+  .social-handle:hover {
+    transform: translateY(-2px);
+    border-color: var(--wine);
+    box-shadow: var(--shadow-md);
+  }
+  .social-handle svg { color: var(--wine); }
+  .tiktok-frame {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    max-width: 360px;
+    margin-left: auto;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    background: #1a0f0a;
+    border: 1px solid var(--line);
+    transform: rotate(1.5deg);
+    transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out);
+  }
+  .tiktok-frame:hover { transform: rotate(0) translateY(-6px); box-shadow: var(--shadow-xl); }
+  .tiktok-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .tiktok-tape {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(201, 164, 73, 0.35);
+    backdrop-filter: blur(2px);
+    width: 90px;
+    height: 24px;
+    border-radius: 2px;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(26, 15, 10, 0.15);
+  }
+  @media (max-width: 860px) {
+    .social-inner { grid-template-columns: 1fr; }
+    .tiktok-frame { margin: 0 auto; }
+  }
+
+  /* ---------- Closing ---------- */
+  .closing {
+    padding: clamp(110px, 16vh, 200px) var(--gutter);
+    text-align: center;
+    position: relative;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 100%, rgba(122, 26, 26, 0.08) 0%, transparent 65%),
+      linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+    overflow: hidden;
+  }
+  .closing-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .closing h2 {
+    margin-bottom: 20px;
+  }
+  .closing .subhead {
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+  .closing-ctas {
+    display: inline-flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .closing-handwritten {
+    font-family: 'Caveat', cursive;
+    font-size: 26px;
+    color: var(--wine);
+    margin-top: 36px;
+    display: inline-block;
+    transform: rotate(-1.5deg);
+  }
+
+  /* ---------- Footer ---------- */
+  footer {
+    background: #1a0f0a;
+    color: rgba(248, 242, 231, 0.7);
+    padding: 60px var(--gutter) 32px;
+    font-size: 14px;
+  }
+  .foot {
+    max-width: var(--max);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(248, 242, 231, 0.1);
+  }
+  .foot-brand .logo { margin-bottom: 18px; }
+  .foot-brand .logo img { height: 64px; mix-blend-mode: screen; opacity: 0.95; }
+  .foot-brand p {
+    font-size: 14px;
+    color: rgba(248, 242, 231, 0.65);
+    line-height: 1.65;
+    margin: 0 0 20px;
+    max-width: 320px;
+  }
+  .foot-social {
+    display: flex;
+    gap: 12px;
+  }
+  .foot-social a {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(248, 242, 231, 0.08);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--cream);
+    transition: background .2s ease, transform .2s ease;
+  }
+  .foot-social a:hover { background: var(--wine-2); transform: translateY(-2px); }
+  .foot h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 18px;
+  }
+  .foot-links-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .foot-links-col a {
+    color: rgba(248, 242, 231, 0.65);
+    transition: color .2s ease;
+  }
+  .foot-links-col a:hover { color: var(--cream); }
+  .foot-bottom {
+    max-width: var(--max);
+    margin: 28px auto 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: rgba(248, 242, 231, 0.45);
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  @media (max-width: 780px) {
+    .foot { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 520px) {
+    .foot { grid-template-columns: 1fr; }
+  }
+
+  /* Small screens: tame the headline weight */
+  @media (max-width: 560px) {
+    .hero h1.display { font-size: clamp(44px, 10vw, 64px); }
+    .catering-callout { padding: 36px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scroll-progress" id="scrollProgress"></div>
+
+<div class="announce">
+  Now taking reservations for holiday catering &amp; private events — <a href="#catering">Ask about hosting at Amici →</a>
+</div>
+
+<nav class="nav" id="nav">
+  <a href="#" class="logo" aria-label="Amici Pizza — home">
+    <img src="https://amicipizzaaz.com/wp-content/uploads/2019/07/cropped-Screen-Shot-2019-07-28-at-9.45.36-PM.png" alt="Amici Pizza" />
+  </a>
+  <div class="nav-links">
+    <a href="#menu">Menu</a>
+    <a href="#story">Our Story</a>
+    <a href="#locations">Locations</a>
+    <a href="#catering">Catering</a>
+    <a href="#social">TikTok</a>
+    <a href="#reviews">Reviews</a>
+  </div>
+  <div class="nav-utils">
+    <a href="#order" class="nav-cta">Order Online</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg">
+    <!-- Primary: pulls from amicipizzaaz.com when available; falls back to Unsplash if 404 -->
+    <img id="heroBgImg"
+      src="https://amicipizzaaz.com/wp-content/uploads/2022/10/amici-hero.jpg"
+      onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=2000&q=80';"
+      alt="" aria-hidden="true" />
+  </div>
+  <div class="hero-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-inner">
+    <div class="reveal" data-anim="fade-up">
+      <span class="hero-eyebrow-italian">— Mesa &amp; Queen Creek, Arizona —</span>
+    </div>
+    <h1 class="display text-grad-light split-words" id="heroHeadline">
+      <span class="word" style="--i:0">New</span>
+      <span class="word" style="--i:1">York</span>
+      <span class="word" style="--i:2">pizza.</span><br/>
+      <span class="word accent-word" style="--i:3">
+        <em>Amici</em> vibes.
+      </span>
+    </h1>
+    <div class="reveal" data-anim="fade-up" style="transition-delay: 1.2s">
+      <p class="hero-sub">
+        <em>Amici</em> means <em>friends</em> in Italian — and that's the whole idea. Hand-tossed New York-style pies, recipes that traveled here from the old country, and a dining room where everyone's family for the hour. Two locations across the East Valley. One very hot oven.
+      </p>
+      <div class="hero-ctas">
+        <a href="#order" class="btn btn-primary">Order Online</a>
+        <a href="#menu" class="btn btn-outline-light">See the Menu</a>
+      </div>
+
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          Hand-Tossed Daily
+          <strong>NY-Style Pies</strong>
+        </div>
+        <div class="hero-meta-item">
+          Two Locations
+          <strong>Mesa &amp; Queen Creek</strong>
+        </div>
+        <div class="hero-meta-item">
+          Scratch Kitchen
+          <strong>Nonna-approved recipes</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll-hint">Scroll</div>
+</section>
+
+<!-- Stats band -->
+<section class="case-band">
+  <div class="case-inner">
+    <div class="reveal" data-anim="fade-up">
+      <div class="eyebrow" style="justify-content:center;">A Valley favorite, two locations strong</div>
+
+      <h2 class="headline text-grad-dark" style="max-width: 960px; margin: 0 auto;">
+        Real dough. Real sauce. Real
+        <span class="underline-wrap">family recipes<svg class="scribble-underline thick" viewBox="0 0 420 20" preserveAspectRatio="none"><path d="M 8 14 C 80 4 180 18 270 8 C 330 4 380 14 414 11"/></svg></span>.
+      </h2>
+      <p class="subhead" style="max-width: 740px; margin: 24px auto 0; text-align: center;">
+        We slow-ferment our dough, simmer our sauce with San Marzano tomatoes, and shred our mozzarella in-house every morning. No shortcuts, no freezer, no frozen. Just the kind of pizza you remember from a corner shop in Brooklyn — served under the Arizona sun.
+      </p>
+
+      <div class="case-numbers stagger">
+        <div class="reveal" data-anim="fade-up" style="--i:0">
+          <div class="case-n text-grad-dark" data-count="4.8" data-suffix="★">4.8★</div>
+          <div class="case-l">Average rating</div>
+        </div>
+        <div class="reveal" data-anim="fade-up" style="--i:1">
+          <div class="case-n text-grad-dark" data-count="1400" data-suffix="+">1,400+</div>
+          <div class="case-l">Five-star reviews</div>
+        </div>
+        <div class="reveal" data-anim="fade-up" style="--i:2">
+          <div class="case-n text-grad-dark" data-count="2" data-suffix="">2</div>
+          <div class="case-l">East Valley locations</div>
+        </div>
+        <div class="reveal" data-anim="fade-up" style="--i:3">
+          <div class="case-n text-grad-dark" data-count="72" data-suffix="hr">72hr</div>
+          <div class="case-l">Cold-fermented dough</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 40px;">
+        <a href="#story" class="btn btn-ghost">Read our story</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Menu intro -->
+<section class="section-intro reveal" data-anim="fade-up" id="menu">
+  <div class="eyebrow">The Menu</div>
+  <h2 class="headline text-grad-dark">
+    Pies we're proud of,
+    <span class="underline-wrap">cooked with love<svg class="scribble-underline" viewBox="0 0 300 20" preserveAspectRatio="none"><path d="M 10 12 C 60 4 120 18 180 10 C 230 4 270 14 290 8"/></svg></span>.
+  </h2>
+  <p class="subhead">A shortlist of what we do best — from the classics our regulars order every week, to the specialty pies we dreamt up on slow Wednesday nights. See something you like? Grab a menu below.</p>
+</section>
+
+<!-- Signature Pizzas -->
+<section class="area" id="signature">
+  <div class="area-head reveal" data-anim="fade-up">
+    <div class="eyebrow">// Signature Pies</div>
+    <h2 class="headline">
+      The ones we're
+      <span class="underline-wrap">known for<svg class="scribble-underline" viewBox="0 0 300 20" preserveAspectRatio="none"><path d="M 8 14 C 50 6 100 16 150 10 C 210 4 260 14 292 9"/></svg></span>.
+    </h2>
+    <span class="area-tag">crowd favorites</span>
+  </div>
+
+  <div class="menu-cards stagger">
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:0">
+      <span class="menu-tag">Fan Favorite</span>
+      <h3>Vodka Pie</h3>
+      <span class="menu-ital">la pizza alla vodka</span>
+      <p>Our signature. Creamy vodka sauce, fresh mozzarella, grated parmesan, basil, and a finishing drizzle of extra virgin olive oil on a crispy hand-stretched crust. The one everybody texts their friends about.</p>
+    </div>
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:1">
+      <span class="menu-tag gold">House Specialty</span>
+      <h3>Upside-Down Sicilian</h3>
+      <span class="menu-ital">la siciliana capovolta</span>
+      <p>Thick, airy Sicilian dough with the cheese laid down <em>first</em>, then finished with our slow-cooked tomato sauce on top. Crunchy on the bottom, pillowy in the middle, zippy on top.</p>
+    </div>
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:2">
+      <span class="menu-tag basil">Classic</span>
+      <h3>Margherita</h3>
+      <span class="menu-ital">la margherita</span>
+      <p>Three ingredients, done right. San Marzano tomato, fresh mozzarella di bufala, and whole basil leaves finished after the bake. Simple, honest, the way nonna intended.</p>
+    </div>
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:3">
+      <span class="menu-tag">The House Pie</span>
+      <h3>The Amici</h3>
+      <span class="menu-ital">la nostra</span>
+      <p>Pepperoni, Italian sausage, roasted red peppers, sweet onions, and a blend of fresh and aged mozzarella. Named after the shop for a reason — it's the pie we'd split with friends on a Friday night.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Beyond Pizza -->
+<section class="area alt" id="beyond">
+  <div class="area-head reveal" data-anim="fade-up">
+    <div class="eyebrow">// Beyond the Pizza</div>
+    <h2 class="headline">
+      There's so much more —
+      <br/><span class="underline-wrap">trust us<svg class="scribble-underline" viewBox="0 0 300 20" preserveAspectRatio="none"><path d="M 10 12 C 60 4 120 18 180 10 C 230 4 270 14 290 8"/></svg></span>.
+    </h2>
+    <p class="subhead">A full Italian kitchen lives behind the pizza counter. Pastas cooked to order, breaded cutlets that crunch, and desserts we make in small batches every day.</p>
+    <span class="area-tag">handmade, small-batch, daily</span>
+  </div>
+
+  <div class="menu-cards stagger">
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:0">
+      <span class="menu-tag">Pasta</span>
+      <h3>Rigatoni alla Vodka</h3>
+      <span class="menu-ital">il classico</span>
+      <p>Al dente rigatoni tossed in the same creamy vodka sauce we put on the pie. Finished with cracked pepper, pecorino, and a pinch of chili flake for balance.</p>
+    </div>
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:1">
+      <span class="menu-tag">Entrée</span>
+      <h3>Chicken Parmigiana</h3>
+      <span class="menu-ital">il parmigiano</span>
+      <p>Hand-breaded cutlet, fried till golden, smothered in house marinara, topped with mozz and basil, broiled to order, served over linguine.</p>
+    </div>
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:2">
+      <span class="menu-tag basil">Starter</span>
+      <h3>Fried Ravioli</h3>
+      <span class="menu-ital">ravioli fritti</span>
+      <p>Crispy cheese-stuffed ravioli dusted with parmesan, served with a ramekin of our house marinara for dunking. Dangerously good with a cold beer.</p>
+    </div>
+    <div class="menu-card reveal" data-anim="fade-up" style="--i:3">
+      <span class="menu-tag gold">Dolce</span>
+      <h3>Cannoli</h3>
+      <span class="menu-ital">il dolce della casa</span>
+      <p>Crispy shells piped to order with sweet ricotta, orange zest, and dark chocolate chips, dusted in powdered sugar. A proper way to end the meal.</p>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: clamp(48px, 6vh, 72px);">
+    <a href="#order" class="btn btn-primary">View Full Menu</a>
+  </div>
+</section>
+
+<!-- Story -->
+<section class="story" id="story">
+  <div class="story-inner">
+    <div class="story-img reveal" data-anim="fade-right">
+      <img src="https://amicipizzaaz.com/wp-content/uploads/2022/10/amici-story.jpg"
+           onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?auto=format&fit=crop&w=1200&q=80';"
+           alt="Fresh pizza dough being hand-stretched" />
+    </div>
+    <div class="reveal" data-anim="fade-left">
+      <div class="eyebrow">Our Story</div>
+      <h2 class="headline text-grad-dark">
+        Where everyone's
+        <span class="underline-wrap">family<svg class="scribble-underline thick" viewBox="0 0 260 20" preserveAspectRatio="none"><path d="M 8 14 C 50 4 110 18 170 9 C 210 4 240 13 252 10"/></svg></span>
+        — if only for an hour.
+      </h2>
+      <p>We named the place <em>Amici</em> because that's what happens inside. Strangers at tables next to each other start talking about the pie they just ordered. Kids who came in crying leave holding a cannoli and laughing. Regulars walk in and the line cook already knows what they want.</p>
+      <p>We grew up in pizzerias back East — the kind where you could hear the dough slap the counter from the parking lot. When we moved to Arizona, we couldn't find one that tasted like home. So we built it. <em>Slow-fermented dough. San Marzano sauce. Mozzarella we shred every morning.</em> Everything made from scratch, because the shortcut is where the love gets lost.</p>
+      <p>Whether you're grabbing a slice after soccer practice or sitting down for a family dinner — we're glad you came. Mangia, amici.</p>
+      <span class="story-signature">— The Amici family</span>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery strip -->
+<section class="gallery-strip" aria-hidden="true">
+  <div class="gallery-track">
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1548369937-47519962c11a?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1601924582970-9238bcb495d9?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=800&q=80');"></div>
+    <!-- Duplicate for seamless loop -->
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1548369937-47519962c11a?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1601924582970-9238bcb495d9?auto=format&fit=crop&w=800&q=80');"></div>
+    <div class="gallery-item" style="background-image:url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=800&q=80');"></div>
+  </div>
+</section>
+
+<!-- Locations -->
+<section class="locations" id="locations">
+  <div class="locations-head reveal" data-anim="fade-up">
+    <div class="eyebrow">Find Us</div>
+    <h2 class="headline text-grad-dark">
+      Two locations.
+      <span class="underline-wrap">Same warm welcome<svg class="scribble-underline thick" viewBox="0 0 340 20" preserveAspectRatio="none"><path d="M 10 14 C 70 4 150 18 220 9 C 280 4 310 13 330 10"/></svg></span>.
+    </h2>
+    <p class="subhead" style="margin: 28px auto 0; text-align: center;">Dine in, pick up, or let us deliver. Both shops run the same kitchen with the same recipes — so you can't go wrong, whichever one's closer.</p>
+  </div>
+
+  <div class="locations-grid">
+    <!-- Mesa -->
+    <div class="loc-card reveal" data-anim="fade-up" style="--i:0">
+      <div class="loc-card-header">
+        <div class="loc-img" data-bg="https://amicipizzaaz.com/wp-content/uploads/2022/10/amici-mesa.jpg" data-bg-fallback="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80" style="background-image:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80');">
+          <span class="loc-pin">Original Shop</span>
+        </div>
+      </div>
+      <div class="loc-body">
+        <h3>Mesa</h3>
+        <div class="loc-meta">where it all started</div>
+
+        <div class="loc-details">
+          <div class="loc-detail">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <div class="label">Address</div>
+              <div class="value">2023 W Guadalupe Rd<br/>Mesa, AZ 85202</div>
+            </div>
+          </div>
+          <div class="loc-detail">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <div class="label">Phone</div>
+              <a href="tel:+14803610006" class="value">(480) 361-0006</a>
+            </div>
+          </div>
+        </div>
+
+        <ul class="loc-hours">
+          <li class="today"><span>Sunday</span><span>11:00 AM — 8:00 PM</span></li>
+          <li><span>Mon — Sat</span><span>11:00 AM — 9:00 PM</span></li>
+        </ul>
+
+        <div class="loc-ctas">
+          <a href="https://www.google.com/maps/search/?api=1&query=2023+W+Guadalupe+Rd+Mesa+AZ+85202" target="_blank" rel="noopener" class="btn btn-primary">Get Directions</a>
+          <a href="#order" class="btn btn-ghost">Order Pickup</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Queen Creek -->
+    <div class="loc-card reveal" data-anim="fade-up" style="--i:1">
+      <div class="loc-card-header">
+        <div class="loc-img" data-bg="https://amicipizzaaz.com/wp-content/uploads/2024/12/amici-queen-creek.jpg" data-bg-fallback="https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=1200&q=80" style="background-image:url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=1200&q=80');">
+          <span class="loc-pin">Newer Shop</span>
+        </div>
+      </div>
+      <div class="loc-body">
+        <h3>Queen Creek</h3>
+        <div class="loc-meta">same family, new neighborhood</div>
+
+        <div class="loc-details">
+          <div class="loc-detail">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div>
+              <div class="label">Address</div>
+              <div class="value">22480 E Ocotillo Rd, Ste C101<br/>Queen Creek, AZ 85142</div>
+            </div>
+          </div>
+          <div class="loc-detail">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div>
+              <div class="label">Phone</div>
+              <a href="tel:+14808401347" class="value">(480) 840-1347</a>
+            </div>
+          </div>
+        </div>
+
+        <ul class="loc-hours">
+          <li class="today"><span>Sunday</span><span>11:00 AM — 8:00 PM</span></li>
+          <li><span>Mon — Sat</span><span>11:00 AM — 9:00 PM</span></li>
+        </ul>
+
+        <div class="loc-ctas">
+          <a href="https://www.google.com/maps/search/?api=1&query=22480+E+Ocotillo+Rd+Queen+Creek+AZ+85142" target="_blank" rel="noopener" class="btn btn-primary">Get Directions</a>
+          <a href="#order" class="btn btn-ghost">Order Pickup</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Catering callout -->
+  <div class="catering-callout reveal" data-anim="fade-up" id="catering">
+    <div>
+      <div class="eyebrow">Catering &amp; Private Events</div>
+      <h3>Got a crowd? <em>We've got the pies.</em></h3>
+      <p>Birthdays, office lunches, team parties, rehearsal dinners — we've catered them all. Full catering menu with trays of pasta, salads, and 18" party pizzas. Or book out a section of the dining room and let us host.</p>
+      <a href="#contact" class="btn btn-primary">Request a Quote</a>
+    </div>
+    <div class="catering-visual">
+      <div class="big-num">10 — 200</div>
+      <div class="big-label">Guests we can feed</div>
+      <span class="caveat">ask about our 18" party pizzas!</span>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews -->
+<section class="reviews" id="reviews">
+  <div class="reviews-head reveal" data-anim="fade-up">
+    <div class="eyebrow">What folks are saying</div>
+    <h2 class="headline text-grad-dark">
+      Y'all have been
+      <span class="underline-wrap">very kind<svg class="scribble-underline" viewBox="0 0 300 20" preserveAspectRatio="none"><path d="M 10 12 C 60 4 120 18 180 10 C 230 4 270 14 290 8"/></svg></span>.
+    </h2>
+    <div class="rating-chip">
+      <span class="stars">★★★★★</span>
+      <span><strong>4.8</strong> average on Yelp &amp; Google</span>
+      <span class="count">· 1,400+ reviews</span>
+    </div>
+  </div>
+
+  <div class="quotes stagger">
+    <div class="quote reveal" data-anim="fade-up" style="--i:0">
+      <div class="qstars">★★★★★</div>
+      <p>Finally, real New York pizza in Arizona. The vodka pie is stupid good — we drive across town for it. Service is warm, the dining room is cozy, and the cannoli alone is worth the trip.</p>
+      <div class="quote-attr"><strong>Marisa T.</strong><span>Yelp review · Mesa</span></div>
+    </div>
+    <div class="quote reveal" data-anim="fade-up" style="--i:1">
+      <div class="qstars">★★★★★</div>
+      <p>Upside-down Sicilian is a revelation. Crust has the perfect chew, the sauce is bright and not oversweet, and the staff actually remembers us from week to week. Our Friday night spot.</p>
+      <div class="quote-attr"><strong>David &amp; Rachel</strong><span>Google review · Queen Creek</span></div>
+    </div>
+    <div class="quote reveal" data-anim="fade-up" style="--i:2">
+      <div class="qstars">★★★★★</div>
+      <p>Catered our daughter's engagement dinner — 45 guests, two trays of rigatoni vodka, three party pizzas, a platter of chicken parm. Not a single crumb left. Easiest vendor we worked with.</p>
+      <div class="quote-attr"><strong>Cheryl H.</strong><span>Google review · Private event</span></div>
+    </div>
+    <div class="quote reveal" data-anim="fade-up" style="--i:3">
+      <div class="qstars">★★★★★</div>
+      <p>Grew up on Long Island. Moved here in 2021 and spent two years looking for real pizza. Found it at Amici. The dough, the sauce, the fold — all perfect. Ten out of ten.</p>
+      <div class="quote-attr"><strong>Tony D.</strong><span>Yelp review · Mesa</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- Social / TikTok -->
+<section class="social-section" id="social">
+  <div class="social-inner">
+    <div class="social-copy reveal" data-anim="fade-right">
+      <div class="eyebrow">Follow Along</div>
+      <h2 class="headline text-grad-dark">
+        Catch us on
+        <span class="underline-wrap">TikTok<svg class="scribble-underline thick" viewBox="0 0 240 20" preserveAspectRatio="none"><path d="M 8 14 C 50 4 100 18 150 9 C 190 4 220 13 232 10"/></svg></span>.
+      </h2>
+      <p>The dough toss, the cheese pull, the upside-down Sicilian coming out of the oven — all of it lives on our TikTok. New videos most weeks, plus the occasional bloopers reel from the back of house.</p>
+      <div class="social-handles">
+        <a href="https://www.tiktok.com/@amici.pizza" target="_blank" rel="noopener" class="social-handle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.27a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.36z"/></svg>
+          @amici.pizza
+        </a>
+        <a href="https://www.instagram.com/amicipizzaaz/" target="_blank" rel="noopener" class="social-handle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          @amicipizzaaz
+        </a>
+        <a href="https://www.facebook.com/AmiciPizzaAZ/" target="_blank" rel="noopener" class="social-handle">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+          @AmiciPizzaAZ
+        </a>
+      </div>
+      <a href="https://www.tiktok.com/@amici.pizza" target="_blank" rel="noopener" class="btn btn-primary">Watch on TikTok →</a>
+    </div>
+    <div class="tiktok-frame reveal" data-anim="fade-left">
+      <span class="tiktok-tape" aria-hidden="true"></span>
+      <iframe
+        src="https://www.tiktok.com/embed/@amici.pizza?lang=en-US&referrer=https%3A%2F%2Famicipizzaaz.com%2F&embedFrom=oembed"
+        title="Amici Pizza on TikTok"
+        loading="lazy"
+        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- Closing -->
+<section class="closing" id="order">
+  <div class="closing-inner reveal" data-anim="fade-up">
+    <div class="eyebrow" style="justify-content:center;">Come hungry</div>
+    <h2 class="display text-grad-dark">
+      <span class="accent-word underline-wrap" style="display:inline-block;">
+        <em>Mangia,</em> amici<svg class="scribble-underline thick" viewBox="0 0 460 20" preserveAspectRatio="none"><path d="M 6 12 C 80 4 190 16 280 10 C 340 6 400 14 454 11"/></svg>
+      </span>.
+    </h2>
+    <p class="subhead">Order online for pickup, give us a call, or just come by — whichever's easier. We'll have a table, a slice, and a cold drink waiting for you.</p>
+    <div class="closing-ctas">
+      <a href="#" class="btn btn-primary">Order Online</a>
+      <a href="tel:+14803610006" class="btn btn-outline">Call Mesa — (480) 361-0006</a>
+      <a href="tel:+14808401347" class="btn btn-outline">Call Queen Creek — (480) 840-1347</a>
+    </div>
+    <div>
+      <span class="closing-handwritten">see you soon — grazie mille!</span>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="foot">
+    <div class="foot-brand">
+      <a href="#" class="logo" aria-label="Amici Pizza — home">
+        <img src="https://amicipizzaaz.com/wp-content/uploads/2019/07/cropped-Screen-Shot-2019-07-28-at-9.45.36-PM.png" alt="Amici Pizza" />
+      </a>
+      <p>New York-style pizza, scratch-made Italian, and a warm welcome — served fresh in Mesa and Queen Creek, Arizona since day one.</p>
+      <div class="foot-social">
+        <a href="https://www.instagram.com/amicipizzaaz/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/AmiciPizzaAZ/" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18
